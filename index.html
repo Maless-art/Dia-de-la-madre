@@ -216,11 +216,22 @@
         body.intro-running * {
             cursor: none !important
         }
-    </style>
+    
+.hero { display:flex; align-items:center; gap:4%; background:#141414; min-height:0; padding:24px 5%; }
+.hero-copy { flex:1; min-width:0; }
+.hero-art { width:48%; aspect-ratio:16/9; object-fit:contain; border-radius:6px; background:#222; }
+.tiles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; }
+.tile { width:100%; min-width:0; min-height:0; margin:0; padding:0; overflow:hidden; display:block; position:relative; }
+.tile img { width:100%; height:100%; object-fit:contain; display:block; }
+.tile:focus { border-color:white; }
+.detail { padding:24px 5%; }
+.info { padding:24px 5%; max-width:900px; }
+@media(max-width:600px){ .hero {flex-direction:column-reverse; align-items:stretch;} .hero-art{width:100%;} .tiles{gap:6px;} .hero button{padding:8px;} }
+</style>
 </head>
 
 <body>
-    <header><span class="logo">NETFLIX</span><span id="status">Prueba LG · 0.1.2 Alpha</span></header>
+    <header><span class="logo">NETFLIX</span><span id="status"> 0.2.0 Alpha</span></header>
     <section id="profiles" class="screen active">
         <h1>¿Quién está viendo?</h1>
         <div class="profiles"><button class="profile" data-row="0" data-col="0" onclick="enter('Maruquel')"><span
@@ -234,39 +245,102 @@
     <section id="intro" class="screen" aria-label="Introducción"><video id="introVideo" src="intro.mp4" preload="auto"
             playsinline webkit-playsinline disablepictureinpicture tabindex="-1"></video></section>
     <section id="home" class="screen">
-        <div class="hero"><small>NETFLIX · ESPECIAL</small>
-            <h1>La mejor mamá del mundo</h1>
-            <p>Una historia de amor, aventuras y momentos inolvidables. Contenido provisional para pruebas.</p><button
-                class="play" data-row="0" data-col="0" onclick="selectedSource='prueba.mp4'; playVideo()">▶ Reproducir</button> <button data-row="0"
-                data-col="1" onclick="details('La mejor mamá del mundo')">Más información</button> <button data-row="0"
-                data-col="2" onclick="back()">Perfiles</button>
+        <div class="hero"><div class="hero-copy"><small>NETFLIX · PELÍCULA ORIGINAL</small>
+            <h1>Si pudiera elegirte otra vez</h1><p>2026 · 4 min 36 s · Animación</p>
+            <button class="play" data-row="0" data-col="0" onclick="selectMovie(0); playVideo()">▶ Reproducir</button>
+            <button data-row="0" data-col="1" onclick="selectMovie(0); information()">Más información</button>
+            <button data-row="0" data-col="2" onclick="back()">Perfiles</button></div>
+            <img class="hero-art" id="featuredArt" alt="Si pudiera elegirte otra vez">
         </div>
-        <div class="catalog" id="catalog"></div>
+        <div class="catalog" id="catalog"><h2>Nuestra historia</h2><div class="tiles" id="tiles"></div></div>
     </section>
-    <section id="detail" class="screen detail"><small>NETFLIX · CONTENIDO DE PRUEBA</small>
-        <h1 id="movieTitle"></h1>
-        <p>Sinopsis provisional. Los recuerdos familiares se incorporarán en una próxima versión.</p><button
-            class="play" data-row="0" data-col="0" onclick="playVideo()">▶ Reproducir</button> <button data-row="0"
-            data-col="1" onclick="back()">Volver</button>
+    <section id="detail" class="screen detail"><div class="hero"><div class="hero-copy"><small>NETFLIX · ORIGINAL</small>
+        <h1 id="movieTitle"></h1><p id="movieMeta"></p><p id="detailNotice" aria-live="polite"></p>
+        <button class="play" data-row="0" data-col="0" onclick="playVideo()">▶ Reproducir</button>
+        <button data-row="0" data-col="1" onclick="information()">Más información</button>
+        <button data-row="0" data-col="2" onclick="back()">Volver</button></div><img id="detailArt" class="hero-art" alt=""></div>
     </section>
+    <section id="info" class="screen info"><small>NETFLIX · MÁS INFORMACIÓN</small><h1 id="infoTitle"></h1><p id="infoMeta"></p><p id="infoSynopsis" style="white-space:pre-wrap;line-height:1.6"></p><button data-row="0" data-col="0" onclick="back()">Volver</button></section>
     <section id="player" class="screen"><video id="video" playsinline controls preload="none"
-            src="https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"></video>
+           ></video>
         <div><button data-row="0" data-col="0" onclick="toggleVideo()">Reproducir / Pausar</button> <button data-row="0"
                 data-col="1" onclick="full()">Pantalla completa</button> <button data-row="0" data-col="2"
                 onclick="back()">Volver</button></div>
-        <p id="videoStatus" class="hint" aria-live="polite">Selecciona un video para probar la reproducción.</p>
+        <p id="videoStatus" class="hint" aria-live="polite">Selecciona una producción.</p>
     </section>
-    <footer>0.1.2 Alpha · Proyecto familiar no oficial · Sin contenido personal</footer>
+    <footer>0.2.0 Alpha · Proyecto familiar no oficial</footer>
     <script>
-        var selectedSource = 'prueba.mp4'; var current = 'profiles', historyStack = [], lastFocus = {}, video = document.getElementById('video');
-        var rows = [['Big Buck Bunny', 'Video de prueba'], ['Mamá y yo', 'Nuestros primeros días', 'Pequeñas aventuras', 'Abrazos inolvidables'], ['Nuestra historia', 'Un día especial', 'Momentos divertidos', 'Recuerdos en familia'], ['Especial Día de las Madres', 'La mejor mamá', 'Una gran aventura', 'Detrás de cámaras']]; var headings = ['Videos de prueba', 'Mamá y yo', 'Momentos inolvidables', 'Especiales'];
-        rows.forEach(function (items, r) { var h = document.createElement('h2'); h.textContent = headings[r]; document.getElementById('catalog').appendChild(h); var line = document.createElement('div'); line.className = 'tiles'; items.forEach(function (name, c) { var b = document.createElement('button'); b.className = 'tile'; b.setAttribute('data-row', r + 1); b.setAttribute('data-col', c); b.innerHTML = '<small> N · ORIGINAL</small>' + name; b.onclick = function () { details(name) }; line.appendChild(b) }); document.getElementById('catalog').appendChild(line) });
+        // CONFIGURACIÓN DEL CATÁLOGO: editar sinopsis, video, duración y género aquí.
+        var peliculas = [
+    {
+        "titulo": "Si pudiera elegirte otra vez",
+        "portada": "portadas/SI PUDIERA ELEGIRTE OTRA VEZ.jpg",
+        "video": "",
+        "sinopsis": "",
+        "duracion": "4 min 36 s",
+        "genero": "Animación"
+    },
+    {
+        "titulo": "Tus primeros días como mamá",
+        "portada": "portadas/Tus Primeros Días Como Mamá.png",
+        "video": "",
+        "sinopsis": "",
+        "duracion": "",
+        "genero": ""
+    },
+    {
+        "titulo": "La gran noticia",
+        "portada": "portadas/La Gran Noticia.png",
+        "video": "",
+        "sinopsis": "",
+        "duracion": "",
+        "genero": ""
+    },
+    {
+        "titulo": "Antes de mi llegada",
+        "portada": "portadas/Antes de mi Llegada.png",
+        "video": "",
+        "sinopsis": "",
+        "duracion": "",
+        "genero": ""
+    },
+    {
+        "titulo": "Mis primeros días junto a tí",
+        "portada": "portadas/Mis Primeros Días Junto a Ti.png",
+        "video": "",
+        "sinopsis": "",
+        "duracion": "",
+        "genero": ""
+    },
+    {
+        "titulo": "Sigo aquí",
+        "portada": "portadas/Sigo Aquí.png",
+        "video": "",
+        "sinopsis": "",
+        "duracion": "",
+        "genero": ""
+    },
+    {
+        "titulo": "Momentos",
+        "portada": "portadas/Momentos.png",
+        "video": "",
+        "sinopsis": "",
+        "duracion": "",
+        "genero": ""
+    }
+];
+        var selectedSource = '', selectedMovie = peliculas[0], current = 'profiles', historyStack = [], lastFocus = {}, video = document.getElementById('video');
+        document.getElementById('featuredArt').src = peliculas[0].portada;
+        peliculas.slice(1).forEach(function(movie,i){ var b=document.createElement('button'); b.className='tile'; b.setAttribute('data-row',1+Math.floor(i/3)); b.setAttribute('data-col',i%3); b.setAttribute('aria-label',movie.titulo); var img=document.createElement('img'); img.src=movie.portada; img.alt=movie.titulo; b.appendChild(img); b.onclick=function(){details(i+1)}; document.getElementById('tiles').appendChild(b); });
+        function meta(m){return ['2026',m.duracion,m.genero].filter(Boolean).join(' · ')}
+        function selectMovie(i){selectedMovie=peliculas[i];selectedSource=selectedMovie.video;}
+        function information(){document.getElementById('infoTitle').textContent=selectedMovie.titulo;document.getElementById('infoMeta').textContent=meta(selectedMovie);document.getElementById('infoSynopsis').textContent=selectedMovie.sinopsis || 'Sinopsis pendiente.';go('info');}
         function buttons() { return Array.prototype.slice.call(document.querySelectorAll('#' + current + ' button[data-row]')) } function focusButton(b) { if (!b) return; b.focus(); try { b.scrollIntoView({ block: 'nearest', inline: 'nearest' }) } catch (e) { b.scrollIntoView(false) } } function show(id, restore) { document.getElementById(current).classList.remove('active'); current = id; document.getElementById(id).classList.add('active'); window.scrollTo(0, 0); focusButton(restore && lastFocus[id] || buttons()[0]) } function go(id) { lastFocus[current] = document.activeElement; historyStack.push(current); show(id, false) } var intro = document.getElementById('introVideo'), introTimer = null, introWatch = null;
         function finishIntro() { if (current !== 'intro') return; clearTimeout(introTimer); clearTimeout(introWatch); intro.pause(); document.body.classList.remove('intro-running'); show('home', false) }
-        function enter(name) { if (current !== 'profiles') return; document.getElementById('status').textContent = name + ' · 0.1.2 Alpha'; lastFocus.profiles = document.activeElement; historyStack.push('profiles'); show('intro', false); document.body.classList.add('intro-running'); intro.controls = false; intro.muted = false; try { intro.currentTime = 0 } catch (e) { } introTimer = setTimeout(finishIntro, 8000); try { var p = intro.play(); if (p && p.catch) p.catch(finishIntro) } catch (e) { finishIntro() } }
+        function enter(name) { if (current !== 'profiles') return; document.getElementById('status').textContent = name + ' · 0.2.0 Alpha'; lastFocus.profiles = document.activeElement; historyStack.push('profiles'); show('intro', false); document.body.classList.add('intro-running'); intro.controls = false; intro.muted = false; try { intro.currentTime = 0 } catch (e) { } introTimer = setTimeout(finishIntro, 8000); try { var p = intro.play(); if (p && p.catch) p.catch(finishIntro) } catch (e) { finishIntro() } }
         intro.addEventListener('playing', function () { clearTimeout(introTimer); clearTimeout(introWatch); introWatch = setTimeout(finishIntro, Math.max(10000, (isFinite(intro.duration) ? intro.duration - intro.currentTime : 30) * 1000 + 5000)) }); intro.addEventListener('ended', finishIntro); intro.addEventListener('error', finishIntro);
-        function details(name) { selectedSource = name === 'Big Buck Bunny' ? 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4' : 'prueba.mp4'; document.getElementById('movieTitle').textContent = name; go('detail') } function back() { if (current === 'intro') { finishIntro(); return } if (current === 'player') video.pause(); if (historyStack.length) show(historyStack.pop(), true) } function playVideo() { if (video.getAttribute('src') !== selectedSource) { video.src = selectedSource; video.load(); } document.getElementById('videoStatus').textContent = 'Cargando video…'; go('player'); var p = video.play(); if (p && p.catch) p.catch(function () { document.getElementById('videoStatus').textContent = 'Pulsa Reproducir / Pausar para iniciar.' }) } function toggleVideo() { if (video.paused) { var p = video.play(); if (p && p.catch) p.catch(function () { document.getElementById('videoStatus').textContent = 'No se pudo iniciar el video.' }) } else video.pause() } function full() { var f = video.requestFullscreen || video.webkitRequestFullscreen || video.webkitEnterFullscreen; if (f) { try { var p = f.call(video); if (p && p.catch) p.catch(function () { document.getElementById('videoStatus').textContent = 'Pantalla completa no disponible.' }) } catch (e) { document.getElementById('videoStatus').textContent = 'Pantalla completa no disponible.' } } else document.getElementById('videoStatus').textContent = 'El navegador no admite esta función.' } video.addEventListener('error', function () { document.getElementById('videoStatus').textContent = 'Error al cargar video: verifica internet y compatibilidad.' }); video.addEventListener('playing', function () { document.getElementById('videoStatus').textContent = 'Reproducción activa.' });
-        document.addEventListener('keydown', function (e) { var k = e.keyCode; if (current === 'intro') { e.preventDefault(); if (k === 461 || k === 27 || k === 8 || e.key === 'BrowserBack') finishIntro(); return } document.getElementById('status').textContent = 'Tecla: ' + (e.key || k) + ' · Alpha'; if (k === 461 || k === 10009 || k === 27 || k === 8 || e.key === 'BrowserBack') { e.preventDefault(); back(); return } if (k < 37 || k > 40) return; if (document.activeElement === video) return; e.preventDefault(); var all = buttons(), a = document.activeElement; if (all.indexOf(a) < 0) { focusButton(all[0]); return } var r = +a.getAttribute('data-row'), c = +a.getAttribute('data-col'), targetRow = r + (k === 38 ? -1 : k === 40 ? 1 : 0), targetCol = c + (k === 37 ? -1 : k === 39 ? 1 : 0); var candidates = all.filter(function (b) { return +b.getAttribute('data-row') === targetRow }); if (k === 37 || k === 39) { focusButton(candidates.filter(function (b) { return +b.getAttribute('data-col') === targetCol })[0]) } else { candidates.sort(function (x, y) { return Math.abs(+x.getAttribute('data-col') - c) - Math.abs(+y.getAttribute('data-col') - c) }); focusButton(candidates[0]) } }); focusButton(buttons()[0]);
+        function details(i) { selectMovie(i); document.getElementById('movieTitle').textContent=selectedMovie.titulo; document.getElementById('movieMeta').textContent=meta(selectedMovie); document.getElementById('detailArt').src=selectedMovie.portada; document.getElementById('detailArt').alt=selectedMovie.titulo; document.getElementById('detailNotice').textContent=''; go('detail'); } function back() { if (current === 'intro') { finishIntro(); return } if (current === 'player') video.pause(); if (historyStack.length) show(historyStack.pop(), true) } function playVideo() { if (!selectedSource) { if(current === "detail") document.getElementById("detailNotice").textContent="Video pendiente de conectar."; else alert("Video pendiente de conectar."); return; } if (video.getAttribute('src') !== selectedSource) { video.src = selectedSource; video.load(); } document.getElementById('videoStatus').textContent = 'Cargando video…'; go('player'); var p = video.play(); if (p && p.catch) p.catch(function () { document.getElementById('videoStatus').textContent = 'Pulsa Reproducir / Pausar para iniciar.' }) } function toggleVideo() { if (video.paused) { var p = video.play(); if (p && p.catch) p.catch(function () { document.getElementById('videoStatus').textContent = 'No se pudo iniciar el video.' }) } else video.pause() } function full() { var f = video.requestFullscreen || video.webkitRequestFullscreen || video.webkitEnterFullscreen; if (f) { try { var p = f.call(video); if (p && p.catch) p.catch(function () { document.getElementById('videoStatus').textContent = 'Pantalla completa no disponible.' }) } catch (e) { document.getElementById('videoStatus').textContent = 'Pantalla completa no disponible.' } } else document.getElementById('videoStatus').textContent = 'El navegador no admite esta función.' } video.addEventListener('error', function () { document.getElementById('videoStatus').textContent = 'Error al cargar video: verifica internet y compatibilidad.' }); video.addEventListener('playing', function () { document.getElementById('videoStatus').textContent = 'Reproducción activa.' });
+        document.addEventListener('keydown', function (e) { var k = e.keyCode; if (current === 'intro') { e.preventDefault(); if (k === 461 || k === 27 || k === 8 || e.key === 'BrowserBack') finishIntro(); return }  if (k === 461 || k === 10009 || k === 27 || k === 8 || e.key === 'BrowserBack') { e.preventDefault(); back(); return } if (k < 37 || k > 40) return; if (document.activeElement === video) return; e.preventDefault(); var all = buttons(), a = document.activeElement; if (all.indexOf(a) < 0) { focusButton(all[0]); return } var r = +a.getAttribute('data-row'), c = +a.getAttribute('data-col'), targetRow = r + (k === 38 ? -1 : k === 40 ? 1 : 0), targetCol = c + (k === 37 ? -1 : k === 39 ? 1 : 0); var candidates = all.filter(function (b) { return +b.getAttribute('data-row') === targetRow }); if (k === 37 || k === 39) { focusButton(candidates.filter(function (b) { return +b.getAttribute('data-col') === targetCol })[0]) } else { candidates.sort(function (x, y) { return Math.abs(+x.getAttribute('data-col') - c) - Math.abs(+y.getAttribute('data-col') - c) }); focusButton(candidates[0]) } }); focusButton(buttons()[0]);
     </script>
 </body>
 
