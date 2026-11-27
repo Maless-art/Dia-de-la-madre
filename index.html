@@ -231,7 +231,7 @@
 </head>
 
 <body>
-    <header><span class="logo">NETFLIX</span><span id="status"> 0.3.1 Alpha</span></header>
+    <header><span class="logo">NETFLIX</span><span id="status"> 0.3.2 Alpha</span></header>
     <section id="login" class="screen active" style="text-align:center;padding:9vh 5%">
 <h1>Bienvenido</h1><p>Introduce tu contraseña de acceso.</p>
 <form id="loginForm"><input id="accessPassword" type="password" aria-label="Contraseña" required maxlength="512" style="font:inherit;padding:14px;background:#292929;color:white;border:1px solid #777;border-radius:5px;max-width:90%" autocomplete="current-password"><p><button type="submit" data-row="0" data-col="0" style="background:#e50914">Ingresar</button></p></form><p id="loginStatus" aria-live="polite">Verificando acceso…</p></section>
@@ -249,7 +249,7 @@
             playsinline webkit-playsinline disablepictureinpicture tabindex="-1"></video></section>
     <section id="home" class="screen">
         <div class="hero"><div class="hero-copy"><small>NETFLIX · PELÍCULA ORIGINAL</small>
-            <h1>Si pudiera elegirte otra vez</h1><p>2026 · 4 min 44 s · Animación</p>
+            <h1>Si pudiera elegirte otra vez</h1><p>2026 · 4 min 44 s · Animación emotiva</p>
             <button class="play" data-row="0" data-col="0" onclick="selectMovie(0); playVideo()">▶ Reproducir</button>
             <button data-row="0" data-col="1" onclick="selectMovie(0); information()">Más información</button>
             <button data-row="0" data-col="2" onclick="back()">Perfiles</button></div>
@@ -271,7 +271,7 @@
                 onclick="back()">Volver</button></div>
         <p id="videoStatus" class="hint" aria-live="polite">Selecciona una producción.</p>
     </section>
-    <footer>0.3.1 Alpha · Proyecto familiar no oficial</footer>
+    <footer>0.3.2 Alpha · Proyecto familiar no oficial</footer>
     <script>
         // CONFIGURACIÓN DEL CATÁLOGO: editar sinopsis, video, duración y género aquí.
         var peliculas = [
@@ -279,57 +279,57 @@
         "titulo": "Si pudiera elegirte otra vez",
         "portada": "portadas/SI PUDIERA ELEGIRTE OTRA VEZ.jpg",
         "video": "0",
-        "sinopsis": "",
+        "sinopsis": "Si la vida nos permitiera elegir a las personas que formarán parte de nuestra historia, ¿a quién elegiríamos? Una conmovedora historia contada desde la mirada de un pequeño que descubre el verdadero significado del amor de mamá.",
         "duracion": "4 min 44 s",
-        "genero": "Animación"
+        "genero": "Animación emotiva"
     },
     {
         "titulo": "Tus primeros días como mamá",
         "portada": "portadas/Tus Primeros Días Como Mamá.png",
         "video": "1",
-        "sinopsis": "",
+        "sinopsis": "Antes de conocer su rostro y escuchar su primer llanto, una mujer comienza la transformación más hermosa de su vida. Entre ilusiones, incertidumbres y sueños, nace un amor que cambiará para siempre su manera de ver el mundo.",
         "duracion": "1 min 45 s",
-        "genero": ""
+        "genero": "Documental familiar"
     },
     {
         "titulo": "La gran noticia",
         "portada": "portadas/La Gran Noticia.png",
         "video": "2",
-        "sinopsis": "",
+        "sinopsis": "Una pequeña sorpresa se convierte en el comienzo de una gran historia. Un instante lleno de emociones que marcaría un antes y un después en la vida de toda una familia.",
         "duracion": "43 s",
-        "genero": ""
+        "genero": "Documental familiar"
     },
     {
         "titulo": "Antes de mi llegada",
         "portada": "portadas/Antes de mi Llegada.png",
         "video": "3",
-        "sinopsis": "",
+        "sinopsis": "Mientras todos esperan conocer al nuevo integrante de la familia, una futura mamá descubre que su corazón ya le pertenece a alguien a quien todavía no ha podido abrazar.",
         "duracion": "48 s",
-        "genero": ""
+        "genero": "Documental familiar"
     },
     {
-        "titulo": "Mis primeros días junto a tí",
+        "titulo": "Mis primeros días junto a ti",
         "portada": "portadas/Mis Primeros Días Junto a Ti.png",
         "video": "4",
-        "sinopsis": "",
+        "sinopsis": "Entre pequeñas manos, noches interminables y los primeros abrazos, una madre y su hijo comienzan a escribir una historia de amor que crece con cada nuevo amanecer.",
         "duracion": "1 min 46 s",
-        "genero": ""
+        "genero": "Documental familiar"
     },
     {
         "titulo": "Sigo aquí",
         "portada": "portadas/Sigo Aquí.png",
         "video": "5",
-        "sinopsis": "",
+        "sinopsis": "Hay personas cuya ausencia jamás podrá borrar su presencia. Una emotiva historia sobre los recuerdos, el legado y ese amor que encuentra la manera de permanecer entre generaciones, incluso cuando la vida no les permitió compartir suficiente tiempo.",
         "duracion": "1 min 10 s",
-        "genero": ""
+        "genero": "Homenaje familiar"
     },
     {
         "titulo": "Momentos",
         "portada": "portadas/Momentos.png",
         "video": "6",
-        "sinopsis": "",
+        "sinopsis": "La felicidad no siempre se encuentra en los grandes acontecimientos. A veces se esconde en una sonrisa, un abrazo inesperado o un día cualquiera que, sin saberlo, se convierte en un recuerdo para toda la vida.",
         "duracion": "1 min 3 s",
-        "genero": ""
+        "genero": "Documental familiar"
     }
 ];
         var selectedSource = '', selectedMovie = peliculas[0], current = 'login', historyStack = [], lastFocus = {}, video = document.getElementById('video');
@@ -340,7 +340,7 @@
         function information(){document.getElementById('infoTitle').textContent=selectedMovie.titulo;document.getElementById('infoMeta').textContent=meta(selectedMovie);document.getElementById('infoSynopsis').textContent=selectedMovie.sinopsis || 'Sinopsis pendiente.';go('info');}
         function buttons() { return Array.prototype.slice.call(document.querySelectorAll('#' + current + ' button[data-row]')) } function focusButton(b) { if (!b) return; b.focus(); try { b.scrollIntoView({ block: 'nearest', inline: 'nearest' }) } catch (e) { b.scrollIntoView(false) } } function show(id, restore) { document.getElementById(current).classList.remove('active'); current = id; document.getElementById(id).classList.add('active'); window.scrollTo(0, 0); focusButton(restore && lastFocus[id] || buttons()[0]) } function go(id) { lastFocus[current] = document.activeElement; historyStack.push(current); show(id, false) } var intro = document.getElementById('introVideo'), introTimer = null, introWatch = null;
         function finishIntro() { if (current !== 'intro') return; clearTimeout(introTimer); clearTimeout(introWatch); intro.pause(); document.body.classList.remove('intro-running'); show('home', false) }
-        function enter(name) { if (current !== 'profiles') return; document.getElementById('status').textContent = name + ' · 0.3.1 Alpha'; lastFocus.profiles = document.activeElement; historyStack.push('profiles'); show('intro', false); document.body.classList.add('intro-running'); intro.controls = false; intro.muted = false; try { intro.currentTime = 0 } catch (e) { } introTimer = setTimeout(finishIntro, 8000); try { var p = intro.play(); if (p && p.catch) p.catch(finishIntro) } catch (e) { finishIntro() } }
+        function enter(name) { if (current !== 'profiles') return; document.getElementById('status').textContent = name + ' · 0.3.2 Alpha'; lastFocus.profiles = document.activeElement; historyStack.push('profiles'); show('intro', false); document.body.classList.add('intro-running'); intro.controls = false; intro.muted = false; try { intro.currentTime = 0 } catch (e) { } introTimer = setTimeout(finishIntro, 8000); try { var p = intro.play(); if (p && p.catch) p.catch(finishIntro) } catch (e) { finishIntro() } }
         intro.addEventListener('playing', function () { clearTimeout(introTimer); clearTimeout(introWatch); introWatch = setTimeout(finishIntro, Math.max(10000, (isFinite(intro.duration) ? intro.duration - intro.currentTime : 30) * 1000 + 5000)) }); intro.addEventListener('ended', finishIntro); intro.addEventListener('error', finishIntro);
         function details(i) { selectMovie(i); document.getElementById('movieTitle').textContent=selectedMovie.titulo; document.getElementById('movieMeta').textContent=meta(selectedMovie); document.getElementById('detailArt').src=selectedMovie.portada; document.getElementById('detailArt').alt=selectedMovie.titulo; document.getElementById('detailNotice').textContent=''; go('detail'); } function back() { if (current === 'intro') { finishIntro(); return } if (current === 'player') video.pause(); if (historyStack.length) show(historyStack.pop(), true) } var pendingPlayback = false;
         function playVideo() {
